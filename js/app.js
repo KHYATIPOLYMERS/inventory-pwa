@@ -1,5 +1,5 @@
 // Google Apps Script Web App URL (you'll replace this after deployment)
-const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztfs4PKnqf3MYexqvoPziIDufJph8I4Cjwgg39jYTL2ppnCTOJR3Mo3Cbwb7fWLVFBFg/exec';
 
 let inventoryData = [];
 
