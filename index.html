@@ -1,11 +1,12 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pipe Catalog App</title>
+  <title>Pipe Catalog Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
   <!-- App Header -->
@@ -15,27 +16,32 @@
 
   <!-- Dashboard Modules -->
   <main class="dashboard">
-    <div class="module-card" onclick="openView('products')">
+    <div class="module-card products" onclick="openView('products')">
+      <i class="icon fas fa-box"></i>
       <h2>Products</h2>
       <p>Add, edit, update stock, view details</p>
     </div>
 
-    <div class="module-card" onclick="openView('customers')">
+    <div class="module-card customers" onclick="openView('customers')">
+      <i class="icon fas fa-user"></i>
       <h2>Customers</h2>
       <p>Add, edit, update info, view details</p>
     </div>
 
-    <div class="module-card" onclick="openView('quotations')">
+    <div class="module-card quotations" onclick="openView('quotations')">
+      <i class="icon fas fa-file-invoice"></i>
       <h2>Quotations</h2>
       <p>Saved quotations list, new quotation, edit, PDF, duplicate</p>
     </div>
 
-    <div class="module-card" onclick="openView('gallery')">
+    <div class="module-card gallery" onclick="openView('gallery')">
+      <i class="icon fas fa-image"></i>
       <h2>Gallery</h2>
       <p>Browse product images from Drive</p>
     </div>
 
-    <div class="module-card" onclick="openView('downloads')">
+    <div class="module-card downloads" onclick="openView('downloads')">
+      <i class="icon fas fa-download"></i>
       <h2>Downloads</h2>
       <p>View catalogues, price lists, documents</p>
     </div>
