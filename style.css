@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f5f7fa;
+  color: #333;
+}
+
+.app-header {
+  background: #2f6fed;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.module-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.module-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.12);
+}
+
+.module-card .icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: inherit;
+}
+
+.module-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.module-card p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Accent colors per module */
+.products .icon, .products h2 { color: #2f6fed; }
+.customers .icon, .customers h2 { color: #00a884; }
+.quotations .icon, .quotations h2 { color: #ff7a00; }
+.gallery .icon, .gallery h2 { color: #8a2be2; }
+.downloads .icon, .downloads h2 { color: #e63946; }
