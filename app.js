@@ -5,6 +5,16 @@ if ("serviceWorker" in navigator) {
 }
 
 function openView(module) {
-    window.location.href = `modules/${module}/${module}.html`;
+  const map = {
+    products: "modules/products/products.html",
+    customers: "modules/customers/customers.html",
+    quotations: "modules/quotations/quotations.html",
+    gallery: "modules/gallery/gallery.html",
+    downloads: "modules/downloads/downloads.html"
+  };
+  const target = map[module];
+  if (target) window.location.href = target;
+  else console.warn("Unknown module:", module);
 }
+
 
