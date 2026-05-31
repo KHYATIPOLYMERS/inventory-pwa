@@ -1,19 +1,13 @@
 /* products.js
-   Loads products from a Google Sheet (sheet name "products") and renders:
-   - unique categories as cards
-   - items in a selected category as cards
-   - item details when an item is selected
-
-   Includes modern Refresh and Back button UI handling and a small toast for refresh results.
+   Full module script with shared Back button handling and refresh toast.
+   Replace SHEET_ID with your sheet id.
 */
 
-/* ====== CONFIG ====== */
-// Replace with your Google Sheet ID
-const SHEET_ID = "1KrgWaKCXp0jfHP_OCkH0PRq-Ib228N4sOJrHvdbPmNg";
-// Sheet name exactly as in Google Sheets
+/* CONFIG */
+const SHEET_ID = "YOUR_SHEET_ID_HERE";
 const SHEET_NAME = "products";
 
-/* ====== DOM refs ====== */
+/* DOM refs */
 const categoriesView = document.getElementById("categoriesView");
 const itemsView = document.getElementById("itemsView");
 const detailsView = document.getElementById("detailsView");
@@ -21,7 +15,7 @@ const viewTitle = document.getElementById("viewTitle");
 const quickFilter = document.getElementById("quickFilter");
 const globalSearch = document.getElementById("globalSearch");
 const refreshBtnEl = document.getElementById("refreshBtn");
-const backBtnEl = document.getElementById("backToItems");
+const backPrevBtn = document.getElementById("backToPrev");
 
 /* detail fields */
 const detailName = document.getElementById("detailName");
@@ -34,34 +28,30 @@ const detailWeight = document.getElementById("detailWeight");
 const detailWall = document.getElementById("detailWall");
 const detailInner = document.getElementById("detailInner");
 
-/* in-memory data */
-let rawRows = [];        // array of row objects
-let categories = [];     // unique category names
+/* state */
+let rawRows = [];
+let categories = [];
 let currentCategory = null;
+let currentView = "categories"; // "categories" | "items" | "details"
 
-/* ====== Init ====== */
+/* init */
 document.addEventListener("DOMContentLoaded", () => {
   bindUI();
   loadSheetData();
 });
 
-/* ====== UI bindings ====== */
+/* UI bindings */
 function bindUI() {
-  if (quickFilter) {
-    quickFilter.addEventListener("input", () => {
-      if (currentCategory) renderItems(currentCategory);
-      else renderCategories();
-    });
-  }
+  if (quickFilter) quickFilter.addEventListener("input", () => {
+    if (currentView === "items") renderItems(currentCategory);
+    else renderCategories();
+  });
 
-  if (globalSearch) {
-    globalSearch.addEventListener("input", () => {
-      if (currentCategory) renderItems(currentCategory);
-      else renderCategories();
-    });
-  }
+  if (globalSearch) globalSearch.addEventListener("input", () => {
+    if (currentView === "items") renderItems(currentCategory);
+    else renderCategories();
+  });
 
-  // Refresh button wrapper: toggles UI while loadSheetData runs
   if (refreshBtnEl) {
     refreshBtnEl.addEventListener("click", async () => {
       try {
@@ -78,14 +68,16 @@ function bindUI() {
     });
   }
 
-  // Back button wiring: shows spinner briefly and navigates back to items/categories
-  if (backBtnEl) {
-    backBtnEl.addEventListener("click", async () => {
+  if (backPrevBtn) {
+    backPrevBtn.addEventListener("click", async () => {
       try {
         setBackLoading(true);
-        await new Promise(r => setTimeout(r, 180));
-        if (currentCategory) {
+        await new Promise(r => setTimeout(r, 140));
+        // step back: details -> items -> categories
+        if (currentView === "details") {
           showItemsView(currentCategory);
+        } else if (currentView === "items") {
+          showCategories();
         } else {
           showCategories();
         }
@@ -99,7 +91,7 @@ function bindUI() {
   }
 }
 
-/* helper to toggle refresh button UI */
+/* UI helpers for buttons */
 function setRefreshLoading(isLoading) {
   if (!refreshBtnEl) return;
   refreshBtnEl.setAttribute("aria-busy", isLoading ? "true" : "false");
@@ -107,20 +99,15 @@ function setRefreshLoading(isLoading) {
   if (label) label.textContent = isLoading ? "Refreshing…" : "Refresh";
 }
 
-/* helper to toggle back button UI */
 function setBackLoading(isLoading) {
-  if (!backBtnEl) return;
-  backBtnEl.setAttribute("aria-busy", isLoading ? "true" : "false");
-  const label = backBtnEl.querySelector(".back-label");
+  if (!backPrevBtn) return;
+  backPrevBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
+  const label = backPrevBtn.querySelector(".back-label");
   if (label) label.textContent = isLoading ? "Going back…" : "Back";
 }
 
-/* ====== Toast helper ======
-   Creates a small toast at bottom-right, auto-dismisses after 3s.
-   type: "success" | "error" | "info"
-*/
+/* Toast helper (keeps previous inline implementation) */
 function showToast(message, type = "success", duration = 3000) {
-  // create container if missing
   let container = document.getElementById("toastContainer");
   if (!container) {
     container = document.createElement("div");
@@ -150,7 +137,6 @@ function showToast(message, type = "success", duration = 3000) {
   toast.style.transform = "translateY(8px)";
   toast.style.transition = "opacity .18s ease, transform .18s ease";
 
-  // color variants
   if (type === "success") {
     toast.style.background = "linear-gradient(90deg,#f0fbf6,#ffffff)";
     toast.style.border = "1px solid rgba(16,185,129,0.12)";
@@ -203,22 +189,18 @@ function showToast(message, type = "success", duration = 3000) {
   closeBtn.style.color = "inherit";
   closeBtn.style.fontSize = "14px";
   closeBtn.setAttribute("aria-label", "Close notification");
-  closeBtn.addEventListener("click", () => {
-    dismiss();
-  });
+  closeBtn.addEventListener("click", () => dismiss());
 
   toast.appendChild(icon);
   toast.appendChild(text);
   toast.appendChild(closeBtn);
   container.appendChild(toast);
 
-  // animate in
   requestAnimationFrame(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateY(0)";
   });
 
-  // auto-dismiss
   const timeout = setTimeout(() => dismiss(), duration);
 
   function dismiss() {
@@ -227,7 +209,6 @@ function showToast(message, type = "success", duration = 3000) {
     toast.style.transform = "translateY(8px)";
     setTimeout(() => {
       if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
-      // remove container if empty
       if (container && container.childElementCount === 0 && container.parentNode) {
         container.parentNode.removeChild(container);
       }
@@ -235,23 +216,15 @@ function showToast(message, type = "success", duration = 3000) {
   }
 }
 
-/* ====== Google Sheets fetch ======
-   Uses the "gviz/tq?tqx=out:json" endpoint which returns JSON wrapped in a JS function call.
-   Make sure the sheet is published to the web (File → Publish to web) or the sheet is shared publicly.
-*/
+/* Google Sheets fetch */
 async function loadSheetData() {
   showLoadingState(true);
   try {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
     console.log("Fetching sheet URL:", url);
     const res = await fetch(url, { cache: "no-store" });
-    console.log("Fetch status:", res.status, res.statusText);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
     const text = await res.text();
-
-    // strip wrapper and parse JSON
     const jsonText = text.replace(/^[^\(]*\(/, "").replace(/\);?$/, "");
     const data = JSON.parse(jsonText);
     parseSheetData(data);
@@ -260,7 +233,6 @@ async function loadSheetData() {
   } catch (err) {
     showLoadingState(false);
     console.error("Failed to load sheet:", err);
-
     categoriesView.innerHTML = `
       <div class="empty-row">
         <div style="font-weight:700;margin-bottom:8px;">Unable to load data</div>
@@ -270,19 +242,13 @@ async function loadSheetData() {
         </div>
       </div>
     `;
-
     const retryBtn = document.getElementById("sheetRetry");
-    if (retryBtn) retryBtn.addEventListener("click", () => {
-      loadSheetData();
-    });
-
+    if (retryBtn) retryBtn.addEventListener("click", () => loadSheetData());
     return false;
   }
 }
 
-/* ====== Parse gviz response into array of objects ======
-   Expected headers: category, item, alias, unit, rate, weight, wallthicknessmin, wallthicknessmax, innerdiameter, currentstock
-*/
+/* Parse gviz response */
 function parseSheetData(gviz) {
   const table = gviz.table;
   const cols = table.cols.map(c => (c && c.label) ? c.label.trim().toLowerCase() : "");
@@ -296,7 +262,6 @@ function parseSheetData(gviz) {
     return obj;
   });
 
-  // normalize keys
   rawRows = rawRows.map(r => ({
     category: (r.category || r.cat || r["category"] || "").toString().trim(),
     item: (r.item || r.name || r["item"] || "").toString().trim(),
@@ -311,7 +276,6 @@ function parseSheetData(gviz) {
     __row: r.__row
   }));
 
-  // build unique categories preserving order
   const seen = new Set();
   categories = [];
   rawRows.forEach(r => {
@@ -326,8 +290,10 @@ function parseSheetData(gviz) {
   renderCategories();
 }
 
-/* ====== Render categories as cards ====== */
+/* Render categories */
 function renderCategories() {
+  currentView = "categories";
+  updateBackVisibility();
   viewTitle.textContent = "Categories";
   categoriesView.style.display = "";
   itemsView.style.display = "none";
@@ -365,8 +331,10 @@ function renderCategories() {
   });
 }
 
-/* ====== Render items in a category as cards ====== */
+/* Render items */
 function renderItems(category) {
+  currentView = "items";
+  updateBackVisibility();
   viewTitle.textContent = `Category: ${category}`;
   categoriesView.style.display = "none";
   itemsView.style.display = "";
@@ -404,10 +372,12 @@ function renderItems(category) {
   });
 }
 
-/* ====== Show details for a single item (by row index) ====== */
+/* Show item details */
 function showItemDetails(rowIndex) {
   const item = rawRows.find(r => r.__row === rowIndex);
   if (!item) return;
+  currentView = "details";
+  updateBackVisibility();
   viewTitle.textContent = `Item: ${item.item}`;
   categoriesView.style.display = "none";
   itemsView.style.display = "none";
@@ -424,7 +394,7 @@ function showItemDetails(rowIndex) {
   detailInner.textContent = item.innerdiameter || "-";
 }
 
-/* ====== Helpers ====== */
+/* Helpers */
 function countItemsInCategory(cat) {
   return rawRows.filter(r => (r.category || "Uncategorized") === cat).length;
 }
@@ -441,7 +411,18 @@ function showLoadingState(isLoading) {
   }
 }
 
-/* ====== Public navigation helpers (optional) ====== */
+/* Update back button visibility based on currentView */
+function updateBackVisibility() {
+  if (!backPrevBtn) return;
+  // show back button for items and details, hide for categories
+  if (currentView === "categories") {
+    backPrevBtn.style.display = "none";
+  } else {
+    backPrevBtn.style.display = "";
+  }
+}
+
+/* Public helpers */
 window.showCategories = function() {
   currentCategory = null;
   renderCategories();
