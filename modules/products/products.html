@@ -41,7 +41,11 @@
       <div class="modules-label" id="viewTitle">Categories</div>
       <div style="display:flex;gap:12px;align-items:center;">
         <input id="quickFilter" placeholder="Filter categories or items" style="padding:8px 10px;border-radius:8px;border:1px solid #e0e5ed;background:#fff;outline:none;">
-        <button class="add-btn" id="refreshBtn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
+        <button id="refreshBtn" class="refresh-btn" title="Refresh data" aria-live="polite" aria-busy="false">
+          <span class="refresh-icon"><i class="fas fa-sync-alt"></i></span>
+          <span class="refresh-label">Refresh</span>
+          <span class="refresh-spinner" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
 
