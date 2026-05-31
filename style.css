@@ -317,15 +317,44 @@ body {
     display: none;
   }
   .content {
-    padding: 20px 14px;
+    padding: 16px 12px;
   }
-  .modules-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .page-title {
+    font-size: 17px;
   }
   .stats-bar {
     grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
   }
   .stats-bar .stat-card:last-child {
     grid-column: auto;
+  }
+  .stat-card {
+    padding: 14px 16px;
+  }
+  .modules-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .module-card {
+    padding: 22px 16px;
+    gap: 12px;
+    border-radius: 12px;
+  }
+  .mod-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    font-size: 24px;
+  }
+  .mod-name {
+    font-size: 15px;
+  }
+  .mod-desc {
+    font-size: 12px;
+  }
+  .mod-link {
+    font-size: 12px;
   }
 }
