@@ -9,7 +9,7 @@
 
 /* ====== CONFIG ====== */
 // Replace with your Google Sheet ID
-const SHEET_ID = "YOUR_SHEET_ID_HERE";
+const SHEET_ID = "1KrgWaKCXp0jfHP_OCkH0PRq-Ib228N4sOJrHvdbPmNg";
 // Sheet name exactly as in Google Sheets
 const SHEET_NAME = "products";
 
