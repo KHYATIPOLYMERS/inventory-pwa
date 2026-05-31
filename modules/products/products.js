@@ -3,6 +3,8 @@
    - unique categories as cards
    - items in a selected category as cards
    - item details when an item is selected
+
+   Includes a modern refresh button UI: shows spinner and disables while loading.
 */
 
 /* ====== CONFIG ====== */
@@ -18,7 +20,7 @@ const detailsView = document.getElementById("detailsView");
 const viewTitle = document.getElementById("viewTitle");
 const quickFilter = document.getElementById("quickFilter");
 const globalSearch = document.getElementById("globalSearch");
-const refreshBtn = document.getElementById("refreshBtn");
+const refreshBtnEl = document.getElementById("refreshBtn");
 const backToItemsBtn = document.getElementById("backToItems");
 
 /* detail fields */
@@ -40,23 +42,55 @@ let currentCategory = null;
 /* ====== Init ====== */
 document.addEventListener("DOMContentLoaded", () => {
   bindUI();
+  // initial load
   loadSheetData();
 });
 
 /* ====== UI bindings ====== */
 function bindUI() {
-  quickFilter.addEventListener("input", () => {
-    if (currentCategory) renderItems(currentCategory);
-    else renderCategories();
-  });
-  globalSearch && globalSearch.addEventListener("input", () => {
-    if (currentCategory) renderItems(currentCategory);
-    else renderCategories();
-  });
-  refreshBtn.addEventListener("click", loadSheetData);
-  backToItemsBtn && backToItemsBtn.addEventListener("click", () => {
-    showItemsView(currentCategory);
-  });
+  if (quickFilter) {
+    quickFilter.addEventListener("input", () => {
+      if (currentCategory) renderItems(currentCategory);
+      else renderCategories();
+    });
+  }
+
+  if (globalSearch) {
+    globalSearch.addEventListener("input", () => {
+      if (currentCategory) renderItems(currentCategory);
+      else renderCategories();
+    });
+  }
+
+  if (backToItemsBtn) {
+    backToItemsBtn.addEventListener("click", () => {
+      if (currentCategory) showItemsView(currentCategory);
+      else showCategories();
+    });
+  }
+
+  // Refresh button wrapper: toggles UI while loadSheetData runs
+  if (refreshBtnEl) {
+    refreshBtnEl.addEventListener("click", async () => {
+      try {
+        setRefreshLoading(true);
+        await loadSheetData();
+      } catch (err) {
+        console.error("Refresh failed:", err);
+      } finally {
+        // small delay so spinner is visible briefly even on fast responses
+        setTimeout(() => setRefreshLoading(false), 300);
+      }
+    });
+  }
+}
+
+/* helper to toggle refresh button UI */
+function setRefreshLoading(isLoading) {
+  if (!refreshBtnEl) return;
+  refreshBtnEl.setAttribute("aria-busy", isLoading ? "true" : "false");
+  const label = refreshBtnEl.querySelector(".refresh-label");
+  if (label) label.textContent = isLoading ? "Refreshing…" : "Refresh";
 }
 
 /* ====== Google Sheets fetch ======
@@ -67,23 +101,49 @@ async function loadSheetData() {
   showLoadingState(true);
   try {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Network response not ok: " + res.status);
+    console.log("Fetching sheet URL:", url);
+    const res = await fetch(url, { cache: "no-store" });
+    console.log("Fetch status:", res.status, res.statusText);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    }
     const text = await res.text();
-    // strip the leading "/*O_o*/\ngoogle.visualization.Query.setResponse(" and trailing ");"
+
+    // debug: log a small portion of the raw response if needed
+    // console.log("Raw response (first 1000 chars):", text.slice(0, 1000));
+
+    // strip the leading wrapper and trailing characters to get JSON
     const jsonText = text.replace(/^[^\(]*\(/, "").replace(/\);?$/, "");
     const data = JSON.parse(jsonText);
     parseSheetData(data);
     showLoadingState(false);
+    return true;
   } catch (err) {
     showLoadingState(false);
     console.error("Failed to load sheet:", err);
-    categoriesView.innerHTML = `<div class="empty-row">Unable to load data. Check SHEET_ID, publish settings, and network.</div>`;
+
+    // show inline error with retry
+    categoriesView.innerHTML = `
+      <div class="empty-row">
+        <div style="font-weight:700;margin-bottom:8px;">Unable to load data</div>
+        <div style="color:#7a8a99;margin-bottom:12px;">Check SHEET_ID, publish settings, or network. See console for details.</div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button id="sheetRetry" class="add-btn">Retry</button>
+        </div>
+      </div>
+    `;
+
+    const retryBtn = document.getElementById("sheetRetry");
+    if (retryBtn) retryBtn.addEventListener("click", () => {
+      loadSheetData();
+    });
+
+    return false;
   }
 }
 
 /* ====== Parse gviz response into array of objects ======
-   Assumes first row in sheet is header row with these exact headers:
+   Assumes first row in sheet is header row with these expected headers:
    category, item, alias, unit, rate, weight, wallthicknessmin, wallthicknessmax, innerdiameter, currentstock
 */
 function parseSheetData(gviz) {
@@ -101,8 +161,8 @@ function parseSheetData(gviz) {
 
   // normalize header keys we expect (map possible variations)
   rawRows = rawRows.map(r => ({
-    category: (r.category || r.cat || r["Category"] || "").toString().trim(),
-    item: (r.item || r.name || r["Item"] || "").toString().trim(),
+    category: (r.category || r.cat || r["category"] || "").toString().trim(),
+    item: (r.item || r.name || r["item"] || "").toString().trim(),
     alias: (r.alias || "").toString().trim(),
     unit: (r.unit || "").toString().trim(),
     rate: (r.rate || r.price || 0),
@@ -137,7 +197,7 @@ function renderCategories() {
   itemsView.style.display = "none";
   detailsView.style.display = "none";
 
-  const filter = (quickFilter.value || "").toLowerCase();
+  const filter = (quickFilter && quickFilter.value || "").toLowerCase();
   const gfilter = (globalSearch && globalSearch.value || "").toLowerCase();
 
   categoriesView.innerHTML = "";
@@ -176,7 +236,7 @@ function renderItems(category) {
   itemsView.style.display = "";
   detailsView.style.display = "none";
 
-  const filter = (quickFilter.value || "").toLowerCase();
+  const filter = (quickFilter && quickFilter.value || "").toLowerCase();
   const gfilter = (globalSearch && globalSearch.value || "").toLowerCase();
 
   const rows = rawRows.filter(r => (r.category || "Uncategorized") === category);
