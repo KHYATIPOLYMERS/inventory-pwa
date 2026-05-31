@@ -34,20 +34,21 @@
   </header>
 
   <main class="content">
-    <!-- Title row with shared Back button, view title and controls -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-      <div class="modules-label" id="viewTitle">Categories</div>
+    <!-- Header row: title, back button, controls -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="modules-label" id="viewTitle">Categories</div>
 
-      <!-- Shared Back button (hidden by default; products.js will toggle) -->
-      <button id="backToPrev" class="back-btn" aria-busy="false" style="display:none;" title="Back">
-        <span class="back-icon"><i class="fas fa-arrow-left"></i></span>
-        <span class="back-label">Back</span>
-        <span class="back-spinner" aria-hidden="true"></span>
-      </button>
+        <!-- Shared Back button (hidden by default; products.js will toggle) -->
+        <button id="backToPrev" class="back-btn" aria-busy="false" style="display:none;" title="Back">
+          <span class="back-icon"><i class="fas fa-arrow-left"></i></span>
+          <span class="back-label">Back</span>
+          <span class="back-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
 
-      <!-- Controls (filter + refresh) aligned to the right -->
-      <div style="margin-left:auto;display:flex;gap:12px;align-items:center;">
-        <input id="quickFilter" placeholder="Filter categories or items" style="padding:8px 10px;border-radius:8px;border:1px solid #e0e5ed;background:#fff;outline:none;">
+      <div class="page-header-right">
+        <input id="quickFilter" class="quick-filter" placeholder="Filter categories or items">
         <button id="refreshBtn" class="refresh-btn" title="Refresh data" aria-live="polite" aria-busy="false">
           <span class="refresh-icon"><i class="fas fa-sync-alt"></i></span>
           <span class="refresh-label">Refresh</span>
@@ -56,7 +57,7 @@
       </div>
     </div>
 
-    <div class="page-sub" style="margin-bottom:18px;">Browse categories, view items and inspect details</div>
+    <div class="page-sub">Browse categories, view items and inspect details</div>
 
     <!-- Categories grid (initial view) -->
     <section id="categoriesView" class="modules-grid" aria-live="polite"></section>
