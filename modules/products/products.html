@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Products | Pipe Catalog</title>
 
+  <!-- Shared app styles (project root) -->
+  <link rel="stylesheet" href="../../style.css">
+
+  <!-- Module specific styles -->
+  <link rel="stylesheet" href="products.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <meta name="theme-color" content="#1a2e4a">
+</head>
+<body>
+
+  <!-- Top Bar (shared layout classes from style.css) -->
+  <header class="topbar">
+    <a class="tb-logo" href="../../index.html">
+      <div class="logo-icon"><i class="fas fa-project-diagram"></i></div>
+      <div class="logo-text">Pipe Catalog</div>
+    </a>
+
+    <div class="tb-right">
+      <div class="tb-search"><i class="fas fa-search"></i><input id="globalSearch" placeholder="Search products..."></div>
+      <button class="tb-btn" title="Notifications"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+      <button class="tb-btn" title="Settings"><i class="fas fa-cog"></i></button>
+      <div class="tb-avatar" title="Profile">JS</div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-title">Products</div>
+    <div class="page-sub">Browse categories, view items and inspect details</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 0;">
+      <div class="modules-label" id="viewTitle">Categories</div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <input id="quickFilter" placeholder="Filter categories or items" style="padding:8px 10px;border-radius:8px;border:1px solid #e0e5ed;background:#fff;outline:none;">
+        <button class="add-btn" id="refreshBtn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
+      </div>
+    </div>
+
+    <!-- Categories grid (initial view) -->
+    <section id="categoriesView" class="modules-grid"></section>
+
+    <!-- Items grid (shown after selecting a category) -->
+    <section id="itemsView" class="modules-grid" style="display:none;"></section>
+
+    <!-- Item details panel -->
+    <section id="detailsView" style="display:none;margin-top:18px;">
+      <div class="stat-card" style="padding:18px;">
+        <div style="display:flex;gap:18px;align-items:flex-start;">
+          <div style="min-width:160px;">
+            <div style="width:140px;height:140px;border-radius:8px;background:linear-gradient(135deg,#f0f4ff,#fff);display:flex;align-items:center;justify-content:center;font-size:48px;color:#2b7de9;">
+              <i class="fas fa-box"></i>
+            </div>
+          </div>
+          <div style="flex:1;">
+            <div id="detailName" style="font-size:20px;font-weight:700;color:#1a2e4a;"></div>
+            <div id="detailAlias" class="kv-muted" style="margin-top:6px;"></div>
+            <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+              <div class="table-badge" id="detailCategory" style="background:#2b7de9;"></div>
+              <div class="table-badge" id="detailUnit" style="background:#6b7f95;"></div>
+              <div class="table-badge" id="detailStock" style="background:#10b981;"></div>
+            </div>
+
+            <div style="margin-top:14px;color:#334455;">
+              <div><strong>Rate:</strong> <span id="detailRate"></span></div>
+              <div><strong>Weight:</strong> <span id="detailWeight"></span></div>
+              <div><strong>Wall Thickness:</strong> <span id="detailWall"></span></div>
+              <div><strong>Inner Diameter:</strong> <span id="detailInner"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end;">
+          <button class="add-btn" id="backToItems"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="products.js"></script>
+</body>
+</html>
