@@ -4,12 +4,12 @@
    - items in a selected category as cards
    - item details when an item is selected
 
-   Includes a modern refresh button UI: shows spinner and disables while loading.
+   Includes modern Refresh and Back button UI handling.
 */
 
 /* ====== CONFIG ====== */
 // Replace with your Google Sheet ID
-const SHEET_ID = "1KrgWaKCXp0jfHP_OCkH0PRq-Ib228N4sOJrHvdbPmNg";
+const SHEET_ID = "YOUR_SHEET_ID_HERE";
 // Sheet name exactly as in Google Sheets
 const SHEET_NAME = "products";
 
@@ -21,7 +21,7 @@ const viewTitle = document.getElementById("viewTitle");
 const quickFilter = document.getElementById("quickFilter");
 const globalSearch = document.getElementById("globalSearch");
 const refreshBtnEl = document.getElementById("refreshBtn");
-const backToItemsBtn = document.getElementById("backToItems");
+const backBtnEl = document.getElementById("backToItems");
 
 /* detail fields */
 const detailName = document.getElementById("detailName");
@@ -42,7 +42,6 @@ let currentCategory = null;
 /* ====== Init ====== */
 document.addEventListener("DOMContentLoaded", () => {
   bindUI();
-  // initial load
   loadSheetData();
 });
 
@@ -62,13 +61,6 @@ function bindUI() {
     });
   }
 
-  if (backToItemsBtn) {
-    backToItemsBtn.addEventListener("click", () => {
-      if (currentCategory) showItemsView(currentCategory);
-      else showCategories();
-    });
-  }
-
   // Refresh button wrapper: toggles UI while loadSheetData runs
   if (refreshBtnEl) {
     refreshBtnEl.addEventListener("click", async () => {
@@ -78,8 +70,27 @@ function bindUI() {
       } catch (err) {
         console.error("Refresh failed:", err);
       } finally {
-        // small delay so spinner is visible briefly even on fast responses
         setTimeout(() => setRefreshLoading(false), 300);
+      }
+    });
+  }
+
+  // Back button wiring: shows spinner briefly and navigates back to items/categories
+  if (backBtnEl) {
+    backBtnEl.addEventListener("click", async () => {
+      try {
+        setBackLoading(true);
+        await new Promise(r => setTimeout(r, 180)); // small delay for UX
+        if (currentCategory) {
+          showItemsView(currentCategory);
+        } else {
+          showCategories();
+        }
+      } catch (err) {
+        console.error("Back navigation failed:", err);
+        showCategories();
+      } finally {
+        setTimeout(() => setBackLoading(false), 180);
       }
     });
   }
@@ -91,6 +102,14 @@ function setRefreshLoading(isLoading) {
   refreshBtnEl.setAttribute("aria-busy", isLoading ? "true" : "false");
   const label = refreshBtnEl.querySelector(".refresh-label");
   if (label) label.textContent = isLoading ? "Refreshing…" : "Refresh";
+}
+
+/* helper to toggle back button UI */
+function setBackLoading(isLoading) {
+  if (!backBtnEl) return;
+  backBtnEl.setAttribute("aria-busy", isLoading ? "true" : "false");
+  const label = backBtnEl.querySelector(".back-label");
+  if (label) label.textContent = isLoading ? "Going back…" : "Back";
 }
 
 /* ====== Google Sheets fetch ======
@@ -109,10 +128,7 @@ async function loadSheetData() {
     }
     const text = await res.text();
 
-    // debug: log a small portion of the raw response if needed
-    // console.log("Raw response (first 1000 chars):", text.slice(0, 1000));
-
-    // strip the leading wrapper and trailing characters to get JSON
+    // strip wrapper and parse JSON
     const jsonText = text.replace(/^[^\(]*\(/, "").replace(/\);?$/, "");
     const data = JSON.parse(jsonText);
     parseSheetData(data);
@@ -122,7 +138,6 @@ async function loadSheetData() {
     showLoadingState(false);
     console.error("Failed to load sheet:", err);
 
-    // show inline error with retry
     categoriesView.innerHTML = `
       <div class="empty-row">
         <div style="font-weight:700;margin-bottom:8px;">Unable to load data</div>
@@ -143,15 +158,14 @@ async function loadSheetData() {
 }
 
 /* ====== Parse gviz response into array of objects ======
-   Assumes first row in sheet is header row with these expected headers:
-   category, item, alias, unit, rate, weight, wallthicknessmin, wallthicknessmax, innerdiameter, currentstock
+   Expected headers: category, item, alias, unit, rate, weight, wallthicknessmin, wallthicknessmax, innerdiameter, currentstock
 */
 function parseSheetData(gviz) {
   const table = gviz.table;
   const cols = table.cols.map(c => (c && c.label) ? c.label.trim().toLowerCase() : "");
   const rows = table.rows || [];
   rawRows = rows.map((r, idx) => {
-    const obj = { __row: idx + 1 }; // keep row index
+    const obj = { __row: idx + 1 };
     cols.forEach((colName, i) => {
       const cell = r.c[i];
       obj[colName || `col${i}`] = cell ? cell.v : "";
@@ -159,7 +173,7 @@ function parseSheetData(gviz) {
     return obj;
   });
 
-  // normalize header keys we expect (map possible variations)
+  // normalize keys
   rawRows = rawRows.map(r => ({
     category: (r.category || r.cat || r["category"] || "").toString().trim(),
     item: (r.item || r.name || r["item"] || "").toString().trim(),
@@ -174,7 +188,7 @@ function parseSheetData(gviz) {
     __row: r.__row
   }));
 
-  // build unique categories (preserve order)
+  // build unique categories preserving order
   const seen = new Set();
   categories = [];
   rawRows.forEach(r => {
@@ -185,7 +199,6 @@ function parseSheetData(gviz) {
     }
   });
 
-  // initial render
   currentCategory = null;
   renderCategories();
 }
