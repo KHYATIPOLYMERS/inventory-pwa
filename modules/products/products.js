@@ -4,7 +4,7 @@
 */
 
 /* CONFIG */
-const SHEET_ID = "YOUR_SHEET_ID_HERE";
+const SHEET_ID = "1KrgWaKCXp0jfHP_OCkH0PRq-Ib228N4sOJrHvdbPmNg";
 const SHEET_NAME = "products";
 
 /* DOM refs */
