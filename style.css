@@ -358,3 +358,74 @@ body {
     font-size: 12px;
   }
 }
+
+/* Modern refresh button matching app theme */
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(43,125,233,0.12);
+  background: linear-gradient(90deg,#ffffff,#f7fbff);
+  color: #2b7de9;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(43,125,233,0.06);
+  transition: transform .14s ease, box-shadow .14s ease, opacity .12s ease;
+  min-width: 96px;
+}
+
+/* icon styling */
+.refresh-btn .refresh-icon { 
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center; 
+  width:18px; 
+  height:18px; 
+  font-size:14px; 
+  color:inherit;
+}
+
+/* subtle hover */
+.refresh-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(43,125,233,0.12);
+}
+
+/* disabled state while loading */
+.refresh-btn[aria-busy="true"] {
+  pointer-events: none;
+  opacity: 0.85;
+  transform: none;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+}
+
+/* spinner (small circular) */
+.refresh-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(43,125,233,0.18);
+  border-top-color: #2b7de9;
+  display: none;
+  box-sizing: border-box;
+}
+
+/* show spinner when loading */
+.refresh-btn[aria-busy="true"] .refresh-spinner {
+  display: inline-block;
+  animation: refresh-spin .9s linear infinite;
+}
+
+/* hide icon while loading */
+.refresh-btn[aria-busy="true"] .refresh-icon { opacity: 0; transform: rotate(20deg); transition: opacity .12s; }
+
+/* optional smaller label on very small screens */
+@media (max-width:420px) {
+  .refresh-btn .refresh-label { display:none; }
+  .refresh-btn { min-width: 44px; padding: 8px; }
+}
+
+@keyframes refresh-spin { to { transform: rotate(360deg); } }
