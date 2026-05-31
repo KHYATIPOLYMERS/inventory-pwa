@@ -500,3 +500,9 @@ body {
   .back-btn .back-label { display:none; }
   .back-btn { min-width: 44px; padding: 8px; }
 }
+
+/* Toast basic styles (optional if you prefer the inline styles in JS) */
+#toastContainer { pointer-events: none; }
+.toast { pointer-events: auto; }
+.toast .fas { font-size: 14px; }
+
