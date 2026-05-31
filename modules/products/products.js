@@ -4,7 +4,7 @@
    - items in a selected category as cards
    - item details when an item is selected
 
-   Includes modern Refresh and Back button UI handling.
+   Includes modern Refresh and Back button UI handling and a small toast for refresh results.
 */
 
 /* ====== CONFIG ====== */
@@ -66,9 +66,12 @@ function bindUI() {
     refreshBtnEl.addEventListener("click", async () => {
       try {
         setRefreshLoading(true);
-        await loadSheetData();
+        const ok = await loadSheetData();
+        if (ok) showToast("Products refreshed", "success");
+        else showToast("Refresh failed. See console.", "error");
       } catch (err) {
         console.error("Refresh failed:", err);
+        showToast("Refresh failed. See console.", "error");
       } finally {
         setTimeout(() => setRefreshLoading(false), 300);
       }
@@ -80,7 +83,7 @@ function bindUI() {
     backBtnEl.addEventListener("click", async () => {
       try {
         setBackLoading(true);
-        await new Promise(r => setTimeout(r, 180)); // small delay for UX
+        await new Promise(r => setTimeout(r, 180));
         if (currentCategory) {
           showItemsView(currentCategory);
         } else {
@@ -110,6 +113,126 @@ function setBackLoading(isLoading) {
   backBtnEl.setAttribute("aria-busy", isLoading ? "true" : "false");
   const label = backBtnEl.querySelector(".back-label");
   if (label) label.textContent = isLoading ? "Going back…" : "Back";
+}
+
+/* ====== Toast helper ======
+   Creates a small toast at bottom-right, auto-dismisses after 3s.
+   type: "success" | "error" | "info"
+*/
+function showToast(message, type = "success", duration = 3000) {
+  // create container if missing
+  let container = document.getElementById("toastContainer");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toastContainer";
+    container.setAttribute("aria-live", "polite");
+    container.style.position = "fixed";
+    container.style.right = "18px";
+    container.style.bottom = "18px";
+    container.style.zIndex = 99999;
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.gap = "10px";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.style.minWidth = "220px";
+  toast.style.maxWidth = "360px";
+  toast.style.padding = "10px 14px";
+  toast.style.borderRadius = "10px";
+  toast.style.boxShadow = "0 8px 20px rgba(10,20,30,0.12)";
+  toast.style.display = "flex";
+  toast.style.alignItems = "center";
+  toast.style.gap = "10px";
+  toast.style.opacity = "0";
+  toast.style.transform = "translateY(8px)";
+  toast.style.transition = "opacity .18s ease, transform .18s ease";
+
+  // color variants
+  if (type === "success") {
+    toast.style.background = "linear-gradient(90deg,#f0fbf6,#ffffff)";
+    toast.style.border = "1px solid rgba(16,185,129,0.12)";
+    toast.style.color = "#0f5132";
+  } else if (type === "error") {
+    toast.style.background = "linear-gradient(90deg,#fff6f6,#ffffff)";
+    toast.style.border = "1px solid rgba(232,85,45,0.12)";
+    toast.style.color = "#6b1f1f";
+  } else {
+    toast.style.background = "#fff";
+    toast.style.border = "1px solid rgba(0,0,0,0.06)";
+    toast.style.color = "#223344";
+  }
+
+  const icon = document.createElement("div");
+  icon.style.width = "36px";
+  icon.style.height = "36px";
+  icon.style.borderRadius = "8px";
+  icon.style.display = "flex";
+  icon.style.alignItems = "center";
+  icon.style.justifyContent = "center";
+  icon.style.flexShrink = "0";
+  icon.style.fontSize = "16px";
+
+  if (type === "success") {
+    icon.innerHTML = '<i class="fas fa-check"></i>';
+    icon.style.background = "rgba(16,185,129,0.12)";
+    icon.style.color = "#10b981";
+  } else if (type === "error") {
+    icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+    icon.style.background = "rgba(232,85,45,0.10)";
+    icon.style.color = "#e8552d";
+  } else {
+    icon.innerHTML = '<i class="fas fa-info-circle"></i>';
+    icon.style.background = "rgba(43,125,233,0.08)";
+    icon.style.color = "#2b7de9";
+  }
+
+  const text = document.createElement("div");
+  text.style.fontSize = "13px";
+  text.style.lineHeight = "1.2";
+  text.textContent = message;
+
+  const closeBtn = document.createElement("button");
+  closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+  closeBtn.style.marginLeft = "auto";
+  closeBtn.style.background = "transparent";
+  closeBtn.style.border = "none";
+  closeBtn.style.cursor = "pointer";
+  closeBtn.style.color = "inherit";
+  closeBtn.style.fontSize = "14px";
+  closeBtn.setAttribute("aria-label", "Close notification");
+  closeBtn.addEventListener("click", () => {
+    dismiss();
+  });
+
+  toast.appendChild(icon);
+  toast.appendChild(text);
+  toast.appendChild(closeBtn);
+  container.appendChild(toast);
+
+  // animate in
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+  });
+
+  // auto-dismiss
+  const timeout = setTimeout(() => dismiss(), duration);
+
+  function dismiss() {
+    clearTimeout(timeout);
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(8px)";
+    setTimeout(() => {
+      if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+      // remove container if empty
+      if (container && container.childElementCount === 0 && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+    }, 220);
+  }
 }
 
 /* ====== Google Sheets fetch ======
