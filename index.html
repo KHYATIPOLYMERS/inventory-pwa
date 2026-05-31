@@ -6,44 +6,106 @@
   <title>Pipe Catalog Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2f6fed">
-  <!-- Font Awesome for icons -->
+  <meta name="theme-color" content="#1a2e4a">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <header class="app-header">
-    <h1>Pipe Catalog Dashboard</h1>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="tb-logo">
+      <div class="logo-icon"><i class="fas fa-pipe-section"></i></div>
+      <span class="logo-text">Pipe Catalog</span>
+    </div>
+    <div class="tb-right">
+      <div class="tb-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search products, customers...">
+      </div>
+      <button class="tb-btn" title="Notifications">
+        <i class="fas fa-bell"></i>
+        <span class="notif-dot"></span>
+      </button>
+      <button class="tb-btn" title="Settings">
+        <i class="fas fa-cog"></i>
+      </button>
+      <div class="tb-avatar" title="Profile">JS</div>
+    </div>
   </header>
 
-  <main class="dashboard">
-    <div class="module-card products" onclick="openView('products')">
-      <div class="icon-bg"><i class="fas fa-box"></i></div>
-      <h2>Products</h2>
-      <p>Add, edit, update stock, view details</p>
+  <!-- Main Content -->
+  <main class="content">
+
+    <div class="page-title">Good morning, Jignesh 👋</div>
+    <p class="page-sub">Here's a snapshot of your pipe catalog today.</p>
+
+    <!-- Stats Row -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-icon products-icon"><i class="fas fa-box"></i></div>
+        <div class="stat-info">
+          <div class="stat-label">Total Products</div>
+          <div class="stat-val">248</div>
+          <div class="stat-sub positive">↑ 12 added this month</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon customers-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+          <div class="stat-label">Customers</div>
+          <div class="stat-val">84</div>
+          <div class="stat-sub positive">↑ 3 new this week</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon quotations-icon"><i class="fas fa-file-invoice"></i></div>
+        <div class="stat-info">
+          <div class="stat-label">Open Quotations</div>
+          <div class="stat-val">17</div>
+          <div class="stat-sub warning">5 pending review</div>
+        </div>
+      </div>
     </div>
 
-    <div class="module-card customers" onclick="openView('customers')">
-      <div class="icon-bg"><i class="fas fa-user"></i></div>
-      <h2>Customers</h2>
-      <p>Add, edit, update info, view details</p>
-    </div>
+    <!-- Modules -->
+    <div class="modules-label">Modules</div>
+    <div class="modules-grid">
 
-    <div class="module-card quotations" onclick="openView('quotations')">
-      <div class="icon-bg"><i class="fas fa-file-invoice"></i></div>
-      <h2>Quotations</h2>
-      <p>Saved quotations list, new quotation, edit, PDF, duplicate</p>
-    </div>
+      <div class="module-card" onclick="openView('products')">
+        <div class="mod-icon products"><i class="fas fa-box"></i></div>
+        <div class="mod-name">Products</div>
+        <div class="mod-desc">Add, edit, update stock and view details</div>
+        <div class="mod-link"><i class="fas fa-arrow-right"></i> Open</div>
+      </div>
 
-    <div class="module-card gallery" onclick="openView('gallery')">
-      <div class="icon-bg"><i class="fas fa-image"></i></div>
-      <h2>Gallery</h2>
-      <p>Browse product images from Drive</p>
-    </div>
+      <div class="module-card" onclick="openView('customers')">
+        <div class="mod-icon customers"><i class="fas fa-users"></i></div>
+        <div class="mod-name">Customers</div>
+        <div class="mod-desc">Add, edit, update info and view details</div>
+        <div class="mod-link"><i class="fas fa-arrow-right"></i> Open</div>
+      </div>
 
-    <div class="module-card downloads" onclick="openView('downloads')">
-      <div class="icon-bg"><i class="fas fa-download"></i></div>
-      <h2>Downloads</h2>
-      <p>View catalogues, price lists, documents</p>
+      <div class="module-card" onclick="openView('quotations')">
+        <div class="mod-icon quotations"><i class="fas fa-file-invoice"></i></div>
+        <div class="mod-name">Quotations</div>
+        <div class="mod-desc">Manage quotes, PDF, duplicate and more</div>
+        <div class="mod-link"><i class="fas fa-arrow-right"></i> Open</div>
+      </div>
+
+      <div class="module-card" onclick="openView('gallery')">
+        <div class="mod-icon gallery"><i class="fas fa-image"></i></div>
+        <div class="mod-name">Gallery</div>
+        <div class="mod-desc">Browse product images from Drive</div>
+        <div class="mod-link"><i class="fas fa-arrow-right"></i> Open</div>
+      </div>
+
+      <div class="module-card" onclick="openView('downloads')">
+        <div class="mod-icon downloads"><i class="fas fa-download"></i></div>
+        <div class="mod-name">Downloads</div>
+        <div class="mod-desc">Catalogues, price lists, documents</div>
+        <div class="mod-link"><i class="fas fa-arrow-right"></i> Open</div>
+      </div>
+
     </div>
   </main>
 
