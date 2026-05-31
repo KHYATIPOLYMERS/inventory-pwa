@@ -34,20 +34,19 @@
   </header>
 
   <main class="content">
-    <div class="page-title">Products</div>
-    <div class="page-sub">Browse categories, view items and inspect details</div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 0;">
+    <!-- Title row with shared Back button, view title and controls -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
       <div class="modules-label" id="viewTitle">Categories</div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="modules-label" id="viewTitle">Categories</div>
-        <!-- Shared Back button (hidden by default) -->
-        <button id="backToPrev" class="back-btn" aria-busy="false" style="display:none;" title="Back">
-          <span class="back-icon"><i class="fas fa-arrow-left"></i></span>
-          <span class="back-label">Back</span>
-          <span class="back-spinner" aria-hidden="true"></span>
-        </button>
-      <div style="display:flex;gap:12px;align-items:center;">
+
+      <!-- Shared Back button (hidden by default; products.js will toggle) -->
+      <button id="backToPrev" class="back-btn" aria-busy="false" style="display:none;" title="Back">
+        <span class="back-icon"><i class="fas fa-arrow-left"></i></span>
+        <span class="back-label">Back</span>
+        <span class="back-spinner" aria-hidden="true"></span>
+      </button>
+
+      <!-- Controls (filter + refresh) aligned to the right -->
+      <div style="margin-left:auto;display:flex;gap:12px;align-items:center;">
         <input id="quickFilter" placeholder="Filter categories or items" style="padding:8px 10px;border-radius:8px;border:1px solid #e0e5ed;background:#fff;outline:none;">
         <button id="refreshBtn" class="refresh-btn" title="Refresh data" aria-live="polite" aria-busy="false">
           <span class="refresh-icon"><i class="fas fa-sync-alt"></i></span>
@@ -57,11 +56,13 @@
       </div>
     </div>
 
+    <div class="page-sub" style="margin-bottom:18px;">Browse categories, view items and inspect details</div>
+
     <!-- Categories grid (initial view) -->
-    <section id="categoriesView" class="modules-grid"></section>
+    <section id="categoriesView" class="modules-grid" aria-live="polite"></section>
 
     <!-- Items grid (shown after selecting a category) -->
-    <section id="itemsView" class="modules-grid" style="display:none;"></section>
+    <section id="itemsView" class="modules-grid" style="display:none;" aria-live="polite"></section>
 
     <!-- Item details panel -->
     <section id="detailsView" style="display:none;margin-top:18px;">
@@ -85,13 +86,13 @@
               <div><strong>Rate:</strong> <span id="detailRate"></span></div>
               <div><strong>Weight:</strong> <span id="detailWeight"></span></div>
               <div><strong>Wall Thickness:</strong> <span id="detailWall"></span></div>
-              <div><strong>Inner Diameter:</strong> <span id="detailInner"></span>
-              </div>
+              <div><strong>Inner Diameter:</strong> <span id="detailInner"></span></div>
             </div>
           </div>
         </div>
 
         <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end;">
+          <!-- Local back button kept for accessibility inside details; products.js will also manage shared back -->
           <button id="backToItems" class="back-btn" aria-busy="false" title="Back to items">
             <span class="back-icon"><i class="fas fa-arrow-left"></i></span>
             <span class="back-label">Back</span>
