@@ -429,3 +429,74 @@ body {
 }
 
 @keyframes refresh-spin { to { transform: rotate(360deg); } }
+
+/* Modern Back button (matches refresh button theme) */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(43,125,233,0.08);
+  background: linear-gradient(90deg,#ffffff,#f7fbff);
+  color: #2b7de9;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(43,125,233,0.06);
+  transition: transform .14s ease, box-shadow .14s ease, opacity .12s ease;
+  min-width: 92px;
+}
+
+/* icon styling */
+.back-btn .back-icon {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  font-size:14px;
+  color:inherit;
+}
+
+/* hover */
+.back-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(43,125,233,0.12);
+}
+
+/* disabled / loading state */
+.back-btn[aria-busy="true"] {
+  pointer-events: none;
+  opacity: 0.85;
+  transform: none;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+}
+
+/* spinner */
+.back-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(43,125,233,0.18);
+  border-top-color: #2b7de9;
+  display: none;
+  box-sizing: border-box;
+}
+
+/* show spinner when loading */
+.back-btn[aria-busy="true"] .back-spinner {
+  display: inline-block;
+  animation: back-spin .9s linear infinite;
+}
+
+/* hide icon while loading */
+.back-btn[aria-busy="true"] .back-icon { opacity: 0; transform: rotate(20deg); transition: opacity .12s; }
+
+@keyframes back-spin { to { transform: rotate(360deg); } }
+
+/* responsive: hide label on very small screens */
+@media (max-width:420px) {
+  .back-btn .back-label { display:none; }
+  .back-btn { min-width: 44px; padding: 8px; }
+}
