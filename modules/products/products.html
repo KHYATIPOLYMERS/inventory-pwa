@@ -44,6 +44,23 @@
     <div class="page-title">Products</div>
     <div class="page-sub">Browse categories, view items and inspect details</div>
 
+    <!-- Header: back button at left, title + subtitle immediately to its right -->
+    <header class="module-header-inline">
+      <div class="mh-left">
+        <button id="backToPrev" class="back-btn" aria-busy="false" style="display:none;" title="Back">
+          <span class="back-icon"><i class="fas fa-arrow-left"></i></span>
+          <span class="back-label">Back</span>
+          <span class="back-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div class="mh-right">
+        <div class="page-title">Products</div>
+        <div class="page-sub">Browse categories, view items and inspect details</div>
+      </div>
+    </header>
+
+
     <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 0;">
       <div class="modules-label" id="viewTitle">Categories</div>
       <div style="display:flex;gap:12px;align-items:center;">
