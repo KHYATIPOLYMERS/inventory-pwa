@@ -91,6 +91,32 @@ function bindUI() {
   }
 }
 
+// Ensure the details back button returns to the items list
+const detailsBackBtn = document.getElementById("backToItems");
+if (detailsBackBtn) {
+  detailsBackBtn.addEventListener("click", async () => {
+    try {
+      // show small loading state on the button
+      detailsBackBtn.setAttribute("aria-busy", "true");
+      // brief delay for UX
+      await new Promise(r => setTimeout(r, 120));
+      // If a category is selected, show its items; otherwise show categories
+      if (typeof currentCategory !== "undefined" && currentCategory) {
+        showItemsView(currentCategory);
+      } else {
+        // fallback: show categories if no category is set
+        if (typeof showCategories === "function") showCategories();
+      }
+    } catch (err) {
+      console.error("Back to items failed:", err);
+      if (typeof showCategories === "function") showCategories();
+    } finally {
+      // restore button state
+      setTimeout(() => detailsBackBtn.setAttribute("aria-busy", "false"), 120);
+    }
+  });
+}
+
 /* UI helpers for buttons */
 function setRefreshLoading(isLoading) {
   if (!refreshBtnEl) return;
